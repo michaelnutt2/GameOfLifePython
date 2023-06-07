@@ -3,6 +3,7 @@ X = 0
 Y = 1
 WIDTH = 5
 HEIGHT = 5
+UNIVERSE_SIZE = WIDTH * HEIGHT
 ALIVE = 1
 DEAD = 0
 NEIGHBORS = (-1, 0, 1)
@@ -10,17 +11,30 @@ UNIVERSE = []
 DEBUG_SEED = 135296
 
 
-def print_universe(universe) -> None:
-    """
-    Prints out a representation of the universe state
+class Universe:
+    def __init__(self, seed, width, height):
+        self.width = width
+        self.height = height
+        self.size = self.height * self.width
+        self.universe = []
 
-    :param universe: List of values that make up the universe
-    :return: None
-    """
-    for i in range(WIDTH * HEIGHT):
-        if i % WIDTH == 0:
-            print("\n", end="")
-        print(universe[i], end="")
+        for i in range(self.size):
+            self.universe.append(seed % 2)
+            seed = int(seed / 2)
+
+    def __str__(self):
+        """
+        Formats the universe list to a grid for printing
+        :return: String universe list
+        """
+        output = ""
+        for i in range(self.size):
+            if i % self.width == 0:
+                output += "\n"
+
+            output += f'{self.universe[i]} '
+
+        return output
 
 
 def initial_universe(seed: int):
@@ -30,13 +44,21 @@ def initial_universe(seed: int):
     :return: the generated universe grid
     """
     universe: list = []
-    for i in range(WIDTH * HEIGHT):
+    for i in range(UNIVERSE_SIZE):
         universe.append(seed % 2)
         seed = int(seed / 2)
     return universe
 
 
-def check_neighbors():
+def determine_universe_state() -> list:
+    to_be_updated = []
+    for i in range(UNIVERSE_SIZE):
+        if check_neighbors():
+            to_be_updated.append(i)
+    return to_be_updated
+
+
+def check_neighbors() -> bool:
     ...
 
 
@@ -45,5 +67,5 @@ def update_cells():
 
 
 if __name__ == "__main__":
-    universe = initial_universe(DEBUG_SEED)
-    print_universe(universe)
+    universe = Universe(DEBUG_SEED, 5, 5)
+    print(universe)
