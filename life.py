@@ -17,6 +17,7 @@ class Universe:
         self.height = height
         self.size = self.height * self.width
         self.universe = []
+        self.update = []
 
         for i in range(self.size):
             self.universe.append(seed % 2)
@@ -36,34 +37,48 @@ class Universe:
 
         return output
 
+    def determine_universe_state(self):
+        self.update.clear()
+        for i in range(self.size):
+            if self.check_neighbors(i):
+                self.update.append(i)
 
-def initial_universe(seed: int):
-    """
-    Generates the initial universe state from the given seed
-    :param seed: decimal value for binary universe layout
-    :return: the generated universe grid
-    """
-    universe: list = []
-    for i in range(UNIVERSE_SIZE):
-        universe.append(seed % 2)
-        seed = int(seed / 2)
-    return universe
+    def check_neighbors(self, index) -> int:
+        is_alive = False
+        if self.universe[index] == ALIVE:
+            is_alive = True
 
+        num_neighbors = 0
+        x, y = self.x_y_conv(index)
+        for i in (-1, 0, 1):
+            for j in (-1, 0, 1):
+                if i == 0 and j == 0:
+                    continue
+                if self.universe[self.linear_conv((x - i) % 5, (y - j) % 5)] == ALIVE:
+                    num_neighbors += 1
+                    if num_neighbors > 3:
+                        break
+        if is_alive:
+            if num_neighbors < 2 or num_neighbors > 3:
+                return DEAD
+            else:
+                return ALIVE
+        else:
+            if num_neighbors == 3:
+                return ALIVE
+        return DEAD
 
-def determine_universe_state() -> list:
-    to_be_updated = []
-    for i in range(UNIVERSE_SIZE):
-        if check_neighbors():
-            to_be_updated.append(i)
-    return to_be_updated
+    def update_cells(self):
+        ...
 
+    def x_y_conv(self, index) -> (int, int):
+        x = index % self.width
+        y = int(index / self.width)
 
-def check_neighbors() -> bool:
-    ...
+        return x, y
 
-
-def update_cells():
-    ...
+    def linear_conv(self, x, y) -> int:
+        return (self.width * y) + x
 
 
 if __name__ == "__main__":
