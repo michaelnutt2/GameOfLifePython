@@ -37,9 +37,9 @@ class Universe:
                 output += "\n"
 
             if self.universe[i] == ALIVE:
-                output += '# '
+                output += u"\u25A0 "
             else:
-                output += '_ '
+                output += u"\u25A1 "
 
         return output
 
